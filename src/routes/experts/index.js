@@ -25,6 +25,12 @@ const get = {
 
 const register = {
   handler: (request, reply) => {
+    // TODO: hash password, DO NOT return it
+    // this is NOT done, just a quick and dirty register method
+    request.payload.photograph = 'http://lorempixel.com/640/480/?' + Math.round(Math.random() * 1000000);
+    request.payload.subjects = JSON.stringify(request.payload.subjects.split(' '));
+    console.log(request.payload);
+
     knex('experts')
     .insert(request.payload)
     .returning('*')

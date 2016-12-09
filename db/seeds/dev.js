@@ -21,7 +21,6 @@ fixtureFactory.register('expert', {
     JSON.stringify([faker.random.word(), faker.random.word(), faker.random.word()])
   ),
   area: 'address.city',
-  username: 'internet.userName',
   password: dummyPassword,
   email: 'internet.email',
   phone: 'phone.phoneNumber',
@@ -40,7 +39,6 @@ fixtureFactory.register('teacher', {
   school: 'company.companyName',
   description: 'lorem.sentence',
   address: 'address.streetAddress',
-  username: 'internet.userName',
   password: dummyPassword,
   email: 'internet.email',
   phone: 'phone.phoneNumber',

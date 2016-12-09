@@ -30,9 +30,8 @@ exports.up = function(knex) {
       table.text('school').notNullable();
       table.text('address').notNullable();
       table.text('description').notNullable();
-      table.text('username').notNullable().unique();
-      table.text('password').notNullable();
       table.text('email').notNullable().unique();
+      table.text('password').notNullable();
       table.text('phone').notNullable();
     })
     .createTableIfNotExists('experts', function(table) {
@@ -44,10 +43,9 @@ exports.up = function(knex) {
       table.text('description').notNullable();
       table.json('subjects').notNullable();
       table.text('area').notNullable();
-      table.text('username').notNullable().unique();
-      table.text('password').notNullable();
       table.text('email').notNullable().unique();
-      table.text('phone').notNullable();
+      table.text('password').notNullable();
+      table.text('phone');
     })
     .createTableIfNotExists('admins', function(table) {
       table.increments('id').primary();
