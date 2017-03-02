@@ -34,7 +34,7 @@ module.exports = Object.freeze({
       host: '127.0.0.1',
       user: 'postgres',
       password: '',
-      database: 'backendkit',
+      database: 'xprt',
       ssl: false,
     },
   },
