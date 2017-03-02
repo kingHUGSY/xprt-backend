@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+import crypto from 'crypto';
 
 const env = process.env;
 
@@ -9,6 +10,10 @@ if (!env.NODE_ENV || env.NODE_ENV === 'development') {
 const requiredEnvironmentVariables = [
   'DATABASE_URL',
   'SECRET',
+  'OAUTH2_CLIENT_ID',
+  'OAUTH2_CLIENT_SECRET',
+  'OAUTH2_HOST',
+  'OAUTH2_TOKEN_HOST',
 ];
 
 if (env.NODE_ENV && (env.NODE_ENV !== 'development' && env.NODE_ENV !== 'test')) {
@@ -22,6 +27,11 @@ if (env.NODE_ENV && (env.NODE_ENV !== 'development' && env.NODE_ENV !== 'test'))
     }
   });
 }
+
+const generateSecret = (bytes, type) => {
+  console.log(`Generating ${type} secret with ${bytes} bytes...`);
+  return crypto.randomBytes(bytes).toString('base64');
+};
 
 module.exports = Object.freeze({
   server: {
@@ -39,11 +49,25 @@ module.exports = Object.freeze({
     },
   },
   auth: {
-    secret: env.SECRET || 'really_secret_key',
+    secret: env.SECRET || generateSecret(256, 'jwt'),
     saltRounds: 10,
     options: {
       algorithms: ['HS256'],
       expiresIn: '24h',
     },
+  },
+  oauth2: {
+    provider: {
+      protocol: 'oauth2',
+      auth: env.OAUTH2_HOST,
+      token: env.OAUTH2_TOKEN_HOST,
+    },
+    password: env.SECRET || generateSecret(256, 'oauth2'),
+    clientId: env.OAUTH2_CLIENT_ID,
+    clientSecret: env.OAUTH2_CLIENT_SECRET,
+    forceHttps: true,
+
+    // Terrible idea but required if not using HTTPS especially if developing locally
+    // isSecure: false,
   },
 });

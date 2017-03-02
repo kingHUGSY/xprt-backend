@@ -1261,6 +1261,16 @@ bcryptjs:
   version "2.4.3"
   resolved "https://registry.yarnpkg.com/bcryptjs/-/bcryptjs-2.4.3.tgz#9ab5627b93e60621ff7cdac5da9733027df1d0cb"
 
+bell:
+  version "8.5.0"
+  resolved "https://registry.yarnpkg.com/bell/-/bell-8.5.0.tgz#059da3db877d84db73e2e64dff5ca25fdb5fe242"
+  dependencies:
+    boom "4.x.x"
+    cryptiles "3.x.x"
+    hoek "4.x.x"
+    joi "10.x.x"
+    wreck "10.x.x"
+
 bignumber.js@^2.1.0:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-2.4.0.tgz#838a992da9f9d737e0f4b2db0be62bb09dd0c5e8"

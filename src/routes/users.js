@@ -76,6 +76,29 @@ const users = [
     config: validateRegistrationFields,
     handler: registerUser,
   },
+
+  // Register/authenticate via OAuth2
+  {
+    method: ['GET', 'POST'],
+    path: '/oauth2/callback',
+    config: {
+      auth: 'hundred',
+    },
+    handler: (request, reply) => {
+      if (!request.auth.isAuthenticated) {
+        return reply(`Authentication failed due to: ${request.auth.error.message}`);
+      }
+
+      console.log('auth successful', request.auth);
+
+      // Perform any account lookup or registration, setup local session,
+      // and redirect to the application. The third-party credentials are
+      // stored in request.auth.credentials. Any query parameters from
+      // the initial request are passed back via request.auth.credentials.query.
+
+      return reply(`<pre>${JSON.stringify(request.auth.credentials, null, 4)}</pre>`);
+    },
+  },
 ];
 
 export default users;

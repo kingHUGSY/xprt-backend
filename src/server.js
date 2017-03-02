@@ -28,6 +28,8 @@ export default Glue.compose({
   registrations: [{
     plugin: 'hapi-auth-jwt2',
   }, {
+    plugin: 'bell',
+  }, {
     plugin: {
       register: 'good',
       options: goodOptions,
@@ -43,6 +45,8 @@ export default Glue.compose({
 
   // Uncomment to require authentication by default in all routes
   // server.auth.default('jwt');
+
+  server.auth.strategy('hundred', 'bell', config.oauth2);
 
   // Register routes once auth strategy is set up
   return new Promise((resolve) => {
