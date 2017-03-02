@@ -3,50 +3,33 @@ const fixtureFactory = require('fixture-factory');
 // 'foobar'
 const dummyPassword = '$2a$10$jqtfUwulMw6xqGUA.IsjkuAooNkAjPT3FJ9rRiUoSTsUpNTD8McxC';
 
-fixtureFactory.register('experts', {
+let randomScope = null;
+fixtureFactory.register('users', {
   id: 'random.number',
   createdAt: 'date.recent',
-  photograph: (fixtures, options, dataModel, faker) => (
-    `${faker.image.imageUrl()}?${faker.random.number()}`
-  ),
+  scope: () => {
+    randomScope = Math.random() > 0.5 ? 'expert' : 'teacher';
+    return randomScope;
+  },
   name: (fixtures, options, dataModel, faker) => (
     `${faker.name.firstName()} ${faker.name.lastName()}`
   ),
-  title: 'name.jobTitle',
-  description: 'lorem.sentence',
-  subjects: (fixtures, options, dataModel, faker) => (
-    JSON.stringify([faker.random.word(), faker.random.word(), faker.random.word()])
-  ),
-  area: 'address.city',
-  password: dummyPassword,
   email: 'internet.email',
-  phone: 'phone.phoneNumber',
-});
-
-fixtureFactory.register('teachers', {
-  id: 'random.number',
-  createdAt: 'date.recent',
-  photograph: (fixtures, options, dataModel, faker) => (
-    `${faker.image.imageUrl()}?${faker.random.number()}`
-  ),
-  name: (fixtures, options, dataModel, faker) => (
-    `${faker.name.firstName()} ${faker.name.lastName()}`
-  ),
-  title: 'name.jobTitle',
-  school: 'company.companyName',
+  password: dummyPassword,
   description: 'lorem.sentence',
+
+  title: 'name.jobTitle',
   address: 'address.streetAddress',
-  password: dummyPassword,
-  email: 'internet.email',
   phone: 'phone.phoneNumber',
-});
+  area: 'address.city',
 
-fixtureFactory.register('admins', {
-  id: 'random.number',
-  createdAt: 'date.recent',
-  username: 'internet.userName',
-  password: dummyPassword,
-  email: 'internet.email',
+  subjects: (fixtures, options, dataModel, faker) => {
+    if (randomScope === 'expert') {
+      return JSON.stringify([faker.random.word(), faker.random.word(), faker.random.word()]);
+    } else {
+      return null;
+    }
+  },
 });
 
 fixtureFactory.register('lectures', {
@@ -58,10 +41,8 @@ fixtureFactory.register('lectures', {
   teacherNote: 'lorem.sentence',
   expertNote: 'lorem.sentence',
   targetStudents: 'lorem.sentence',
-  creatorId: 'random.number',
-  creatorType: () => (
-    Math.random() < 0.5 ? 'teacher' : 'expert'
-  ),
+  teacherId: 'random.number',
+  expertId: 'random.number',
   area: 'address.city',
 });
 
@@ -76,17 +57,15 @@ fixtureFactory.register('feedback', {
 });
 
 // Generate one test admin user
-const testUser = Object.assign({}, fixtureFactory.generateOne('admins'), {
-  username: 'foobar',
+const testUser = Object.assign({}, fixtureFactory.generateOne('users'), {
+  scope: 'admin',
   email: 'foo@bar.com',
-  password: dummyPassword,
 });
 
 exports.seed = knex => (
-  knex('admins')
+  knex('users')
     .insert(testUser)
-    .then(() => knex.batchInsert('experts', fixtureFactory.generate('experts', 10)))
-    .then(() => knex.batchInsert('teachers', fixtureFactory.generate('teachers', 10)))
-    .then(() => knex.batchInsert('admins', fixtureFactory.generate('admins', 3)))
+    .then(() => knex.batchInsert('users', fixtureFactory.generate('users', 20)))
+    .then(() => knex.batchInsert('lectures', fixtureFactory.generate('lectures', 50)))
     .then(() => knex.batchInsert('feedback', fixtureFactory.generate('feedback', 30)))
 );

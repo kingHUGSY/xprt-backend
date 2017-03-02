@@ -1,60 +1,29 @@
-<<<<<<< HEAD
+// FIXME: references
+
 exports.up = knex => (
   knex.schema
     .createTableIfNotExists('users', (table) => {
+      // common fields
       table.increments('id').primary();
-      table.enum('scope', ['admin', 'user']).notNullable();
+      table.timestamp('createdAt').defaultTo(knex.fn.now());
+      table.enum('scope', ['admin', 'expert', 'teacher']).notNullable();
+      table.text('name').notNullable();
       table.text('email').notNullable().unique();
       table.text('password').notNullable();
       table.text('description');
       table.binary('image');
-    })
-);
 
-exports.down = knex => (
-  knex.schema
-    .dropTableIfExists('users')
-);
-=======
-/*eslint-disable func-names*/
-'use strict';
-
-exports.up = function(knex) {
-  return knex.schema
-    .createTableIfNotExists('teachers', function(table) {
-      table.increments('id').primary();
-      table.timestamp('createdAt').defaultTo(knex.fn.now());
-      table.text('photograph').notNullable();
-      table.text('name').notNullable();
-      table.text('title').notNullable();
-      table.text('school').notNullable();
-      table.text('address').notNullable();
-      table.text('description').notNullable();
-      table.text('email').notNullable().unique();
-      table.text('password').notNullable();
-      table.text('phone').notNullable();
-    })
-    .createTableIfNotExists('experts', function(table) {
-      table.increments('id').primary();
-      table.timestamp('createdAt').defaultTo(knex.fn.now());
-      table.text('photograph').notNullable();
-      table.text('name').notNullable();
-      table.text('title').notNullable();
-      table.text('description').notNullable();
-      table.json('subjects').notNullable();
-      table.text('area').notNullable();
-      table.text('email').notNullable().unique();
-      table.text('password').notNullable();
+      // common for teachers, experts
+      table.text('title');
+      table.text('address');
       table.text('phone');
+      table.text('area'); // school for teacher
+
+      // experts
+      table.json('subjects');
     })
-    .createTableIfNotExists('admins', function(table) {
-      table.increments('id').primary();
-      table.timestamp('createdAt').defaultTo(knex.fn.now());
-      table.text('username').notNullable().unique();
-      table.text('password').notNullable();
-      table.text('email').notNullable().unique();
-    })
-    .createTableIfNotExists('lectures', function(table) {
+
+    .createTableIfNotExists('lectures', (table) => {
       table.increments('id').primary();
       table.timestamp('createdAt').defaultTo(knex.fn.now());
       table.text('title').notNullable().unique();
@@ -63,25 +32,23 @@ exports.up = function(knex) {
       table.text('teacherNote').notNullable();
       table.text('expertNote').notNullable();
       table.text('targetStudents').notNullable();
-      table.text('creatorId').notNullable();
-      table.text('creatorType').notNullable();
+      table.text('expertId').notNullable();
+      table.text('teacherId').notNullable();
       table.text('area').notNullable();
     })
-    .createTableIfNotExists('feedback', function(table) {
+
+    .createTableIfNotExists('feedback', (table) => {
       table.increments('id').primary();
       table.timestamp('createdAt').defaultTo(knex.fn.now());
       table.text('text').notNullable();
-      table.text('creatorType').notNullable();
+      table.enum('creatorType', ['expert', 'teacher']).notNullable();
       table.text('email').notNullable();
-    });
-};
+    })
+);
 
-exports.down = function(knex) {
-  return knex.schema
-    .dropTableIfExists('teachers')
-    .dropTableIfExists('experts')
-    .dropTableIfExists('admins')
+exports.down = knex => (
+  knex.schema
+    .dropTableIfExists('users')
     .dropTableIfExists('lectures')
-    .dropTableIfExists('feedback');
-};
->>>>>>> 0e1b8d6... Initial commit
+    .dropTableIfExists('feedback')
+);
