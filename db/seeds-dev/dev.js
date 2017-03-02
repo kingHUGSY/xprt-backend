@@ -26,9 +26,9 @@ fixtureFactory.register('users', {
   subjects: (fixtures, options, dataModel, faker) => {
     if (randomScope === 'expert') {
       return JSON.stringify([faker.random.word(), faker.random.word(), faker.random.word()]);
-    } else {
-      return null;
     }
+
+    return null;
   },
 });
 
