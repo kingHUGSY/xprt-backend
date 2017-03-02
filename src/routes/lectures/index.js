@@ -1,86 +1,65 @@
-import knex from 'db';
-import Boom from 'boom';
+import Joi from 'joi';
+import { merge } from 'lodash';
 
-const list = {
-  handler: (request, reply) => {
-    knex('lectures')
-    .then(reply)
-    .catch(err => {
-      reply(Boom.badImplementation('Database error', err));
-    });
-  }
+import { getAuthWithScope } from '../utils/auth';
+
+import {
+  getLectures,
+  getLecture,
+  createLecture,
+  updateLecture,
+  delLecture,
+} from '../controllers/lectures';
+
+const validateLectureId = {
+  validate: {
+    params: {
+      lectureId: Joi.number().integer().required(),
+    },
+  },
 };
 
-const get = {
-  handler: (request, reply) => {
-    knex('lectures')
-    .first()
-    .where('id', request.params.lectureId)
-    .then(reply)
-    .catch(err => {
-      reply(Boom.badImplementation('Database error', err));
-    });
-  }
-};
 
-const register = {
-  handler: (request, reply) => {
-    knex('lectures')
-    .insert(request.payload)
-    .returning('*')
-    .then(reply)
-    .catch(function(err) {
-      reply(Boom.badImplementation('Database error', err));
-    });
-  }
-};
-
-const update = {
-  handler: (request, reply) => {
-    knex('lectures')
-    .where('id', request.params.lectureId)
-    .update(request.payload)
-    .returning('*')
-    .then(reply)
-    .catch(function(err) {
-      reply(Boom.badImplementation('Database error', err));
-    });
-  }
-};
-
-const del = {
-  handler: (request, reply) => {
-    knex('lectures')
-    .where('id', request.params.lectureId)
-    .del()
-    .returning('*')
-    .then(reply)
-    .catch(err => {
-      reply(Boom.badImplementation('Database error', err));
-    });
-  }
-};
-
-export default [
+const lectures = [
+  // Get a list of all lectures
   {
     method: 'GET',
     path: '/lectures',
-    config: list
-  }, {
+    handler: getLectures,
+  },
+
+  // Get more info about a specific lecture
+  {
     method: 'GET',
     path: '/lectures/{lectureId}',
-    config: get
-  }, {
+    config: validateLectureId,
+    handler: getLecture,
+  },
+
+  // Create new lecture
+  {
     method: 'POST',
     path: '/lectures',
-    config: register
-  }, {
-    method: 'PUT',
+    config: getAuthWithScope('teacher'),
+    handler: createLecture,
+  },
+
+  // Update a lecture
+  {
+    method: 'POST',
     path: '/lectures/{lectureId}',
-    config: update
-  }, {
+    config: merge({}, validateLectureId, getAuthWithScope('teacher')), // FIXME: expert access?
+    handler: updateLecture,
+  },
+
+  // Delete a lecture
+  {
     method: 'DELETE',
     path: '/lectures/{lectureId}',
-    config: del
-  }
+    config: merge({}, validateLectureId, getAuthWithScope('teacher')), // FIXME: expert access?
+    handler: delLecture,
+  },
 ];
+
+export default lectures;
+export const routes = server => server.route(lectures);

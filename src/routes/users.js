@@ -33,7 +33,7 @@ const users = [
   {
     method: 'GET',
     path: '/users',
-    config: getAuthWithScope('user'),
+    config: getAuthWithScope('admin'),
     handler: getUsers,
   },
 

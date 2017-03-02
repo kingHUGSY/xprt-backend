@@ -1,86 +1,34 @@
-import knex from 'db';
-import Boom from 'boom';
+import Joi from 'joi';
 
-const list = {
-  handler: (request, reply) => {
-    knex('teachers')
-    .then(reply)
-    .catch(err => {
-      reply(Boom.badImplementation('Database error', err));
-    });
-  }
+import {
+  getTeachers,
+  getTeacher,
+} from '../controllers/teachers';
+
+const validateTeacherId = {
+  validate: {
+    params: {
+      teacherId: Joi.number().integer().required(),
+    },
+  },
 };
 
-const get = {
-  handler: (request, reply) => {
-    knex('teachers')
-    .first()
-    .where('id', request.params.teacherId)
-    .then(reply)
-    .catch(err => {
-      reply(Boom.badImplementation('Database error', err));
-    });
-  }
-};
-
-const register = {
-  handler: (request, reply) => {
-    knex('teachers')
-    .insert(request.payload)
-    .returning('*')
-    .then(reply)
-    .catch(function(err) {
-      reply(Boom.badImplementation('Database error', err));
-    });
-  }
-};
-
-const update = {
-  handler: (request, reply) => {
-    knex('teachers')
-    .where('id', request.params.teacherId)
-    .update(request.payload)
-    .returning('*')
-    .then(reply)
-    .catch(function(err) {
-      reply(Boom.badImplementation('Database error', err));
-    });
-  }
-};
-
-const del = {
-  handler: (request, reply) => {
-    knex('teachers')
-    .where('id', request.params.teacherId)
-    .del()
-    .returning('*')
-    .then(reply)
-    .catch(err => {
-      reply(Boom.badImplementation('Database error', err));
-    });
-  }
-};
-
-export default [
+const teachers = [
+  // Get a list of all teachers
   {
     method: 'GET',
     path: '/teachers',
-    config: list
-  }, {
+    handler: getTeachers,
+  },
+
+  // Get more info about a specific teacher
+  {
     method: 'GET',
     path: '/teachers/{teacherId}',
-    config: get
-  }, {
-    method: 'POST',
-    path: '/teachers',
-    config: register
-  }, {
-    method: 'PUT',
-    path: '/teachers/{teacherId}',
-    config: update
-  }, {
-    method: 'DELETE',
-    path: '/teachers/{teacherId}',
-    config: del
-  }
+    config: validateTeacherId,
+    handler: getTeacher,
+  },
 ];
+
+export default teachers;
+export const routes = server => server.route(teachers);
