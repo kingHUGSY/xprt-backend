@@ -46,7 +46,7 @@ export default Glue.compose({
   // Uncomment to require authentication by default in all routes
   // server.auth.default('jwt');
 
-  server.auth.strategy('hundred', 'bell', config.oauth2);
+  server.auth.strategy('hundred', 'bell', config.oauth2.strategyOptions);
 
   // Register routes once auth strategy is set up
   return new Promise((resolve) => {

@@ -14,6 +14,7 @@ const requiredEnvironmentVariables = [
   'OAUTH2_CLIENT_SECRET',
   'OAUTH2_HOST',
   'OAUTH2_TOKEN_HOST',
+  'OAUTH2_USER_ENDPOINT',
 ];
 
 if (env.NODE_ENV && (env.NODE_ENV !== 'development' && env.NODE_ENV !== 'test')) {
@@ -57,17 +58,20 @@ module.exports = Object.freeze({
     },
   },
   oauth2: {
-    provider: {
-      protocol: 'oauth2',
-      auth: env.OAUTH2_HOST,
-      token: env.OAUTH2_TOKEN_HOST,
-    },
-    password: env.SECRET || generateSecret(256, 'oauth2'),
-    clientId: env.OAUTH2_CLIENT_ID,
-    clientSecret: env.OAUTH2_CLIENT_SECRET,
-    forceHttps: true,
+    userEndpoint: env.OAUTH2_USER_ENDPOINT,
+    strategyOptions: {
+      provider: {
+        protocol: 'oauth2',
+        auth: env.OAUTH2_HOST,
+        token: env.OAUTH2_TOKEN_HOST,
+      },
+      password: env.SECRET || generateSecret(256, 'oauth2'),
+      clientId: env.OAUTH2_CLIENT_ID,
+      clientSecret: env.OAUTH2_CLIENT_SECRET,
+      forceHttps: true,
 
-    // Terrible idea but required if not using HTTPS especially if developing locally
-    // isSecure: false,
+      // Terrible idea but required if not using HTTPS especially if developing locally
+      // isSecure: false,
+    },
   },
 });

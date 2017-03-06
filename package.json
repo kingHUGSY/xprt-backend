@@ -94,6 +94,8 @@
     "node-uuid": "^1.4.7",
     "pg": "^6.1.2",
     "prompt": "^1.0.0",
+    "request": "^2.80.0",
+    "request-promise": "^4.1.1",
     "white-out": "^2.0.0"
   },
   "devDependencies": {

@@ -1,6 +1,10 @@
 import { merge } from 'lodash';
 import Joi from 'joi';
 
+import request from 'request-promise';
+
+import config from '../utils/config';
+
 import { getAuthWithScope, doAuth } from '../utils/auth';
 import {
   getUsers,
@@ -84,19 +88,21 @@ const users = [
     config: {
       auth: 'hundred',
     },
-    handler: (request, reply) => {
-      if (!request.auth.isAuthenticated) {
-        return reply(`Authentication failed due to: ${request.auth.error.message}`);
+    handler: async (req, reply) => {
+      if (!req.auth.isAuthenticated) {
+        return reply(`Authentication failed due to: ${req.auth.error.message}`);
       }
 
-      console.log('auth successful', request.auth);
+      const token = req.auth.credentials.token;
 
-      // Perform any account lookup or registration, setup local session,
-      // and redirect to the application. The third-party credentials are
-      // stored in request.auth.credentials. Any query parameters from
-      // the initial request are passed back via request.auth.credentials.query.
+      const user = await request({
+        uri: config.oauth2.userEndpoint,
+        qs: { access_token: token },
+      });
 
-      return reply(`<pre>${JSON.stringify(request.auth.credentials, null, 4)}</pre>`);
+      console.log('user info:', user);
+
+      return reply(`<pre>${JSON.stringify(user, null, 4)}</pre>`);
     },
   },
 ];
