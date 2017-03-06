@@ -1,10 +1,6 @@
 import { merge } from 'lodash';
 import Joi from 'joi';
 
-import request from 'request-promise';
-
-import config from '../utils/config';
-
 import { getAuthWithScope, doAuth } from '../utils/auth';
 import {
   getUsers,
@@ -13,6 +9,7 @@ import {
   delUser,
   authUser,
   registerUser,
+  oauth2Authenticate,
 } from '../controllers/users';
 
 const validateUserId = {
@@ -28,6 +25,7 @@ const validateRegistrationFields = {
     payload: {
       email: Joi.string().email().required(),
       password: Joi.string().required(),
+      oauth2Id: Joi.any().forbidden(), // Disallow setting oauth2Id
     },
   },
 };
@@ -45,7 +43,7 @@ const users = [
   {
     method: 'GET',
     path: '/users/{userId}',
-    config: merge({}, validateUserId, getAuthWithScope('user')),
+    config: merge({}, validateUserId, getAuthWithScope('expert')),
     handler: getUser,
   },
 
@@ -53,7 +51,7 @@ const users = [
   {
     method: 'POST',
     path: '/users/{userId}',
-    config: merge({}, validateUserId, getAuthWithScope('user')),
+    config: merge({}, validateUserId, getAuthWithScope('expert')),
     handler: updateUser,
   },
 
@@ -88,22 +86,7 @@ const users = [
     config: {
       auth: 'hundred',
     },
-    handler: async (req, reply) => {
-      if (!req.auth.isAuthenticated) {
-        return reply(`Authentication failed due to: ${req.auth.error.message}`);
-      }
-
-      const token = req.auth.credentials.token;
-
-      const user = await request({
-        uri: config.oauth2.userEndpoint,
-        qs: { access_token: token },
-      });
-
-      console.log('user info:', user);
-
-      return reply(`<pre>${JSON.stringify(user, null, 4)}</pre>`);
-    },
+    handler: oauth2Authenticate,
   },
 ];
 

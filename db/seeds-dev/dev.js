@@ -16,6 +16,7 @@ fixtureFactory.register('users', {
   ),
   email: 'internet.email',
   password: dummyPassword,
+  locale: 'fi',
   description: 'lorem.sentence',
 
   title: 'name.jobTitle',

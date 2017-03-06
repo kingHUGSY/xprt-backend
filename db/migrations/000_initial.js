@@ -9,9 +9,12 @@ exports.up = knex => (
       table.enum('scope', ['admin', 'expert', 'teacher']).notNullable();
       table.text('name').notNullable();
       table.text('email').notNullable().unique();
-      table.text('password').notNullable();
+      table.text('password');
+      table.text('locale').notNullable();
+      table.integer('oauth2Id');
       table.text('description');
       table.binary('image');
+      table.text('imageUrl');
 
       // common for teachers, experts
       table.text('title');
